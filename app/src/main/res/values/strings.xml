@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">HumburgerMenuDemo</string>
+    <string name="hamburger_toggle_menu">Hamburger Toggle Menu</string>
+</resources>
