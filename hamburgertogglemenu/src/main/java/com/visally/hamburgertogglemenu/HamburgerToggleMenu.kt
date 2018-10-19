@@ -1,5 +1,7 @@
 package com.visally.hamburgertogglemenu
 
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
@@ -22,7 +24,11 @@ class HamburgerToggleMenu(context: Context, var attrs: AttributeSet?) : View(con
     private var mCenterX: Float = -1f
     private var mCenterY: Float = -1f
 
-    private var factor: Float = 0.5f
+    private var factor: Float = 0f
+    private var factor1: Float = 0f
+    private var factor2: Float = 0f
+    private var factor3: Float = 0f
+    private var factor4: Float = 0f
 
     private var mMenuColor: Int = -1
     private var mStrokeWidth: Float = -1f
@@ -30,7 +36,6 @@ class HamburgerToggleMenu(context: Context, var attrs: AttributeSet?) : View(con
 
     private var animationFlag = true
 
-    private lateinit var mAnimator : ValueAnimator
 
     init {
         val typedArray = context.obtainStyledAttributes(attrs, R.styleable.HamburgerToggleMenu)
@@ -40,7 +45,7 @@ class HamburgerToggleMenu(context: Context, var attrs: AttributeSet?) : View(con
         mDuration = typedArray.getInt(R.styleable.HamburgerToggleMenu_hti_duration, 500)
         typedArray.recycle()
 
-        setHamBurgerMenuAnimator()
+//        setHamBurgerMenuAnimator()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -59,19 +64,26 @@ class HamburgerToggleMenu(context: Context, var attrs: AttributeSet?) : View(con
         }
         mCenterX = mWidth / 2
         mCenterY = mHeight / 2
-
         setMeasuredDimension(mWidth.toInt(), mHeight.toInt())
     }
 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        drawCloseHamburgerMenu(canvas)
+        if(factor==0f)
+        {
+            factor = mWidth-paddingRight
+            factor1 = paddingTop.toFloat()
+            factor2 = mHeight-paddingTop
+            factor3 = paddingTop.toFloat()
+            factor4 = mHeight-paddingBottom
+        }
+        drawHamburgerMenu(canvas)
     }
 
     private fun setHamBurgerMenuAnimator() {
 
-        mAnimator =
+        var mAnimator =
                 if (animationFlag)
                     ValueAnimator.ofFloat(1f, 0f)
                 else
@@ -81,33 +93,117 @@ class HamburgerToggleMenu(context: Context, var attrs: AttributeSet?) : View(con
         mAnimator.interpolator = OvershootInterpolator()
         mAnimator.duration = mDuration.toLong()
         mAnimator.addUpdateListener {
-            factor = it.animatedValue as Float
+            factor1 = it.animatedValue as Float
             invalidate()
         }
         mAnimator.start()
     }
 
+    private fun setHamBurgerMenuAnimator2() {
+
+        var mAnimator =
+                if (animationFlag)
+                    ObjectAnimator.ofFloat(mWidth-paddingRight, mCenterX)
+                else
+                    ObjectAnimator.ofFloat(mCenterX, mWidth-paddingRight)
+
+        var mAnimator1 =
+                if (animationFlag)
+                    ObjectAnimator.ofFloat(paddingTop.toFloat(), mCenterY)
+                else
+                    ObjectAnimator.ofFloat(mCenterY, paddingTop.toFloat())
+
+        var mAnimator2 =
+                if (animationFlag)
+                    ObjectAnimator.ofFloat(mHeight-paddingBottom, mCenterY)
+                else
+                    ObjectAnimator.ofFloat(mCenterY, mHeight-paddingBottom)
+
+        var mAnimator3 =
+                if (animationFlag)
+                    ObjectAnimator.ofFloat(paddingTop.toFloat(), mCenterY)
+                else
+                    ObjectAnimator.ofFloat(mCenterY, paddingTop.toFloat())
+
+        var mAnimator4 =
+                if (animationFlag)
+                    ObjectAnimator.ofFloat(mHeight-paddingBottom, mCenterY)
+                else
+                    ObjectAnimator.ofFloat(mCenterY, mHeight-paddingBottom)
+
+        animationFlag=!animationFlag
+        var animatorSet= AnimatorSet()
+        animatorSet.playSequentially(mAnimator1,mAnimator3,mAnimator4,mAnimator2,mAnimator)
+
+        mAnimator.interpolator = OvershootInterpolator()
+        mAnimator.duration = mDuration.toLong()
+        mAnimator.addUpdateListener {
+            factor = it.animatedValue as Float
+            invalidate()
+        }
+        mAnimator1.interpolator = LinearInterpolator()
+        mAnimator1.duration = mDuration.toLong()
+        mAnimator1.addUpdateListener {
+            factor1 = it.animatedValue as Float
+            invalidate()
+        }
+        mAnimator2.interpolator = LinearInterpolator()
+        mAnimator2.duration = mDuration.toLong()
+        mAnimator2.addUpdateListener {
+            factor2 = it.animatedValue as Float
+            invalidate()
+        }
+
+        mAnimator3.interpolator = LinearInterpolator()
+        mAnimator3.duration = mDuration.toLong()
+        mAnimator3.addUpdateListener {
+            factor3 = it.animatedValue as Float
+            invalidate()
+        }
+
+        mAnimator4.interpolator = LinearInterpolator()
+        mAnimator4.duration = mDuration.toLong()
+        mAnimator4.addUpdateListener {
+            factor4 = it.animatedValue as Float
+            invalidate()
+        }
+
+        animatorSet.start()
+    }
+
 
     private fun drawCloseHamburgerMenu(canvas: Canvas?) {
         val paint: Paint = getPaint()
-        if (paddingTop + (mCenterY * factor) <= mCenterY) {
-            canvas?.drawLine(paddingLeft.toFloat(), paddingTop.toFloat(), mCenterX, paddingTop + (mCenterY * factor), paint)
-            canvas?.drawLine(mWidth - paddingRight, paddingTop.toFloat(), mCenterX, paddingTop + (mCenterY * factor), paint)
+        if (paddingTop + (mCenterY * factor1) <= mCenterY) {
+            canvas?.drawLine(paddingLeft.toFloat(), paddingTop.toFloat(), mCenterX, paddingTop + (mCenterY * factor1), paint)
+            canvas?.drawLine(mWidth - paddingRight, paddingTop.toFloat(), mCenterX, paddingTop + (mCenterY * factor1), paint)
         } else {
             canvas?.drawLine(paddingLeft.toFloat(), paddingTop.toFloat(), mCenterX, mCenterY, paint)
             canvas?.drawLine(mWidth - paddingRight, paddingTop.toFloat(), mCenterX, mCenterY, paint)
         }
 
-        if (paddingLeft + (mCenterX * factor) <= mCenterX)
-            canvas?.drawLine((paddingLeft) + (mCenterX * factor), mCenterY, (mWidth - paddingRight) - (mCenterX * factor), mCenterY, paint)
+        if (paddingLeft + (mCenterX * factor1) <= mCenterX)
+            canvas?.drawLine((paddingLeft) + (mCenterX * factor1), mCenterY, (mWidth - paddingRight) - (mCenterX * factor1), mCenterY, paint)
 
-        if ((mHeight - paddingBottom) - (mCenterY * factor) >= mCenterY) {
-            canvas?.drawLine(paddingLeft.toFloat(), mHeight - paddingBottom, mCenterX, (mHeight - paddingBottom) - (mCenterY * factor), paint)
-            canvas?.drawLine(mWidth - paddingRight, mHeight - paddingBottom, mCenterX, (mHeight - paddingBottom) - (mCenterY * factor), paint)
+        if ((mHeight - paddingBottom) - (mCenterY * factor1) >= mCenterY) {
+            canvas?.drawLine(paddingLeft.toFloat(), mHeight - paddingBottom, mCenterX, (mHeight - paddingBottom) - (mCenterY * factor1), paint)
+            canvas?.drawLine(mWidth - paddingRight, mHeight - paddingBottom, mCenterX, (mHeight - paddingBottom) - (mCenterY * factor1), paint)
         } else {
             canvas?.drawLine(paddingLeft.toFloat(), mHeight - paddingBottom, mCenterX, mCenterY, paint)
             canvas?.drawLine(mWidth - paddingRight, mHeight - paddingBottom, mCenterX, mCenterY, paint)
         }
+    }
+
+    private fun drawHamburgerMenu(canvas: Canvas?){
+        val paint = getPaint()
+        canvas?.drawLine(paddingLeft.toFloat(),paddingTop.toFloat(),mCenterX,factor1,paint)
+        canvas?.drawLine(mWidth-paddingRight,paddingTop.toFloat(),mCenterX,factor3,paint)
+
+        canvas?.drawLine(mCenterX,mCenterY,mWidth-factor,mCenterY,paint)
+        canvas?.drawLine(mCenterX,mCenterY,factor,mCenterY,paint)
+
+        canvas?.drawLine(paddingRight.toFloat(),mHeight-paddingBottom,mCenterX,factor2,paint)
+        canvas?.drawLine(mWidth-paddingRight,mHeight-paddingBottom,mCenterX,factor4,paint)
     }
 
     private fun getPaint(): Paint {
@@ -129,7 +225,6 @@ class HamburgerToggleMenu(context: Context, var attrs: AttributeSet?) : View(con
     }
 
     fun toggleMenu() {
-        mAnimator.cancel()
-        setHamBurgerMenuAnimator()
+        setHamBurgerMenuAnimator2()
     }
 }

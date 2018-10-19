@@ -40,4 +40,18 @@
                 android:text="@string/hamburger_toggle_menu"/>
         </android.support.v7.widget.Toolbar>
     </android.support.design.widget.AppBarLayout>
+
+    <com.visally.hamburgertogglemenu.HamburgerToggleMenu
+        android:id="@+id/hamburgerMenu2"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:padding="20dp"
+        app:hti_icon_color="@color/colorPrimary"
+        android:layout_margin="10dp"
+        app:hti_stroke_width="10dp"
+        app:hti_duration="500"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 </android.support.constraint.ConstraintLayout>

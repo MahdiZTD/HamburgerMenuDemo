@@ -12,9 +12,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         var hamburgerMenu = findViewById<HamburgerToggleMenu>(R.id.hamburgerMenu)
+        var hamburgerMenu2 = findViewById<HamburgerToggleMenu>(R.id.hamburgerMenu2)
         var toolbar = findViewById<Toolbar>(R.id.toolbar)
-        hamburgerMenu.setOnClickListener {
+        hamburgerMenu2.setOnClickListener {
             hamburgerMenu.toggleMenu()
+            hamburgerMenu2.toggleMenu()
         }
     }
 }
